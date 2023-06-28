@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
@@ -13,18 +14,9 @@ class AuthController extends Controller
 
     use HttpResponses;
 
-    public function register(Request $request)
+    public function register(StoreUserRequest $request)
     {
-        $validations = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email|max:255',
-            'password' => 'required|string|max:255'
-        ]);
-
-
-        if ($validations->fails()) {
-            return $this->error($validations->errors(), 'Validation failed', 422);
-        }
+        $request->validate($request->all());
 
         $user = User::create([
             'name' => $request->name,
