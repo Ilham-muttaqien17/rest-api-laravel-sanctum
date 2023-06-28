@@ -17,7 +17,7 @@ class AuthController extends Controller
 
     public function register(StoreUserRequest $request)
     {
-        $request->validate($request->all());
+        $request->validated($request->all());
 
         $user = User::create([
             'name' => $request->name,
