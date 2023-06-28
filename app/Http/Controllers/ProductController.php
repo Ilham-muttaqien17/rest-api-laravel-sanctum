@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreArticleRequest;
+use App\Http\Requests\UpdateArticleRequest;
 use App\Models\Product;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
@@ -48,17 +49,9 @@ class ProductController extends Controller
         return $this->success($product, 'Product created successfully', 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateArticleRequest $request, $id)
     {
-
-        $validations = Validator::make($request->all(), [
-            'name' => 'string|max:255',
-            'slug' => 'string|unique:products|max:255',
-            'description' => 'string|max:255',
-            'price' => 'numeric',
-        ]);
-
-        if ($validations->fails()) return $this->error($validations->errors(), 'Validation failed', 422);
+        $request->validated($request->all());
 
         $product = Product::find($id);
 
