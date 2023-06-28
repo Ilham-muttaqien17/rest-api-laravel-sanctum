@@ -32,7 +32,7 @@ class AuthController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
-        $token = $user->createToken('token')->plainTextToken;
+        $token = $user->createToken('API Token of ' . $user->name)->plainTextToken;
 
         $data = [
             'user' => $user,
@@ -60,7 +60,7 @@ class AuthController extends Controller
             return $this->failed('Invalid credentials', 401);
         }
 
-        $token = $user->createToken('token')->plainTextToken;
+        $token = $user->createToken('API Token of ' . $user->name)->plainTextToken;
 
         $data = [
             'user' => $user,
