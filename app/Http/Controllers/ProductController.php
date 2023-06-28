@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreArticleRequest;
 use App\Models\Product;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
@@ -33,17 +34,9 @@ class ProductController extends Controller
         return $this->success($product, 'Get product successfully');
     }
 
-    public function store(Request $request)
+    public function store(StoreArticleRequest $request)
     {
-
-        $validations = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|unique:products|max:255',
-            'description' => 'string|max:255',
-            'price' => 'required|numeric',
-        ]);
-
-        if ($validations->fails()) return $this->error($validations->errors(), 'Validation failed', 422);
+        $request->validated($request->all());
 
         $product = Product::create([
             'name' => $request->name,
