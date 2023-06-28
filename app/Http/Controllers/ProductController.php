@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
+
+    use HttpResponses;
+
     public function index(Request $request)
     {
         $products =  Product::all();
@@ -17,21 +21,16 @@ class ProductController extends Controller
             $products = Product::where("name", 'like', '%' . $keyword . '%')->get();
         }
 
-        $response['status'] = true;
-        $response['message'] = 'Get products successfully';
-        $response['data'] = $products;
-
-        return response()->json($response, 200);
+        return $this->success($products, 'Get products successfully');
     }
 
     public function show($id)
     {
         $product = Product::find($id);
-        $response['status'] = true;
-        $response['message'] = 'Get product successfully';
-        $response['data'] = $product;
 
-        return response()->json($response, 200);
+        if (!$product) return $this->failed('Product not found!', 404);
+
+        return $this->success($product, 'Get product successfully');
     }
 
     public function store(Request $request)
@@ -44,12 +43,7 @@ class ProductController extends Controller
             'price' => 'required|numeric',
         ]);
 
-        if ($validations->fails()) {
-            $response['status'] = false;
-            $response['errors'] = $validations->errors();
-
-            return response()->json($response, 422);
-        }
+        if ($validations->fails()) return $this->error($validations->errors(), 'Validation failed', 422);
 
         $product = Product::create([
             'name' => $request->name,
@@ -58,11 +52,7 @@ class ProductController extends Controller
             'price' => $request->price
         ]);
 
-        $response['status'] = true;
-        $response['message'] = 'Product created successfully';
-        $response['data'] = $product;
-
-        return response()->json($response, 201);
+        return $this->success($product, 'Product created successfully', 201);
     }
 
     public function update(Request $request, $id)
@@ -75,47 +65,25 @@ class ProductController extends Controller
             'price' => 'numeric',
         ]);
 
-        if ($validations->fails()) {
-            $response['status'] = false;
-            $response['errors'] = $validations->errors();
-
-            return response()->json($response, 422);
-        }
-
+        if ($validations->fails()) return $this->error($validations->errors(), 'Validation failed', 422);
 
         $product = Product::find($id);
 
-        if (!$product) {
-            $response['status'] = false;
-            $response['message'] = "Product not found!";
-
-            return response()->json($response, 404);
-        }
+        if (!$product) return $this->failed('Product not found!', 404);
 
         $product->update($request->all());
 
-        $response['status'] = true;
-        $response['message'] = 'Product updated successfully';
-        $response['data'] = $product;
-
-        return response()->json($response, 200);
+        return $this->success($product, 'Product updated successfully');
     }
 
     public function delete($id)
     {
         $product = Product::find($id);
 
-        if (!$product) {
-            $response['status'] = false;
-            $response['message'] = "Product not found!";
-
-            return response()->json($response, 404);
-        }
+        if (!$product) return $this->failed('Product not found!', 404);
 
         $product->delete();
-        $response['status'] = true;
-        $response['message'] = 'Product deleted successfully';
 
-        return response()->json($response, 200);
+        return $this->success(null, 'Product deleted successfully');
     }
 }
