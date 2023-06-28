@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+
+    use HttpResponses;
+
     public function register(Request $request)
     {
         $validations = Validator::make($request->all(), [
@@ -19,11 +23,7 @@ class AuthController extends Controller
 
 
         if ($validations->fails()) {
-            $response['status'] = false;
-            $response['message'] = "Register failed!";
-            $response['errors'] = $validations->errors();
-
-            return response()->json($response, 422);
+            return $this->error($validations->errors(), 'Validation failed', 422);
         }
 
         $user = User::create([
@@ -39,11 +39,7 @@ class AuthController extends Controller
             'token' => $token
         ];
 
-        $response['status'] = true;
-        $response['message'] = 'Registration Successfully';
-        $response['data'] = $data;
-
-        return response()->json($response, 201);
+        return $this->success($data, 'Registration Successfully', 201);
     }
 
     public function login(Request $request)
@@ -55,11 +51,7 @@ class AuthController extends Controller
 
 
         if ($validations->fails()) {
-            $response['status'] = false;
-            $response['message'] = "Login failed!";
-            $response['errors'] = $validations->errors();
-
-            return response()->json($response, 422);
+            return $this->error($validations->errors(), 'Validation failed', 422);
         }
 
         $user = User::where('email', $request->email)->first();
@@ -78,19 +70,12 @@ class AuthController extends Controller
             'token' => $token
         ];
 
-        $response['status'] = true;
-        $response['message'] = 'Login Successfully';
-        $response['data'] = $data;
-
-        return response()->json($response, 200);
+        return $this->success($data, 'Login Successfully', 200);
     }
 
     public function logout()
     {
         auth()->user()->tokens()->delete();
-        $response['status'] = true;
-        $response['message'] = 'Logged Out';
-
-        return response()->json($response, 200);
+        return $this->success(null, 'Logged Out', 200);
     }
 }
