@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use App\Traits\HttpResponses;
@@ -34,17 +35,9 @@ class AuthController extends Controller
         return $this->success($data, 'Registration Successfully', 201);
     }
 
-    public function login(Request $request)
+    public function login(LoginUserRequest $request)
     {
-        $validations = Validator::make($request->all(), [
-            'email' => 'required|email|max:255',
-            'password' => 'required|string|max:255'
-        ]);
-
-
-        if ($validations->fails()) {
-            return $this->error($validations->errors(), 'Validation failed', 422);
-        }
+        $request->validated($request->all());
 
         $user = User::where('email', $request->email)->first();
 
