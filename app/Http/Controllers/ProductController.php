@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreArticleRequest;
-use App\Http\Requests\UpdateArticleRequest;
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
@@ -35,7 +35,7 @@ class ProductController extends Controller
         return $this->success($product, 'Get product successfully');
     }
 
-    public function store(StoreArticleRequest $request)
+    public function store(StoreProductRequest $request)
     {
         $request->validated($request->all());
 
@@ -49,7 +49,7 @@ class ProductController extends Controller
         return $this->success($product, 'Product created successfully', 201);
     }
 
-    public function update(UpdateArticleRequest $request, $id)
+    public function update(UpdateProductRequest $request, $id)
     {
         $request->validated($request->all());
 
