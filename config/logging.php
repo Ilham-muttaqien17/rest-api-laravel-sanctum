@@ -133,6 +133,7 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'handler' => StreamHandler::class,
             'formatter' => JsonFormatter::class,
+            'days' => 1,
             'with' => [
                 'stream' => storage_path('logs/application.log')
             ]
