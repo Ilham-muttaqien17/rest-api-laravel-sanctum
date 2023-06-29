@@ -21,11 +21,14 @@ class AuthenticationTest extends TestCase
             "password_confirmation" => "tester123"
         ];
 
-        $this->json('POST', '/api/register', $data, [
+        $response = $this->json('POST', '/api/register', $data, [
             "Accept" => "application/json",
             "Content-Type" => "application/json"
-        ])
-            ->assertStatus(201)
+        ]);
+
+        $this->customLog->info("register", ["response" => $response]);
+
+        $response->assertStatus(201)
             ->assertJsonStructure([
                 "data" => [
                     "user",
@@ -54,11 +57,14 @@ class AuthenticationTest extends TestCase
             "password_confirmation" => ""
         ];
 
-        $this->json('POST', '/api/register', $data, [
+        $response = $this->json('POST', '/api/register', $data, [
             "Accept" => "application/json",
             "Content-Type" => "application/json"
-        ])
-            ->assertStatus(422)
+        ]);
+
+        $this->customLog->info("register", ["response" => $response]);
+
+        $response->assertStatus(422)
             ->assertJsonStructure([
                 "errors"
             ]);
@@ -73,11 +79,14 @@ class AuthenticationTest extends TestCase
             "password_confirmation" => "tester"
         ];
 
-        $this->json('POST', '/api/register', $data, [
+        $response = $this->json('POST', '/api/register', $data, [
             "Accept" => "application/json",
             "Content-Type" => "application/json"
-        ])
-            ->assertStatus(422)
+        ]);
+
+        $this->customLog->info("register", ["response" => $response]);
+
+        $response->assertStatus(422)
             ->assertJsonFragment([
                 "password" => [
                     'The password field must be at least 8 characters.'
@@ -99,11 +108,14 @@ class AuthenticationTest extends TestCase
             "password_confirmation" => "tester123"
         ];
 
-        $this->json('POST', '/api/register', $data, [
+        $response = $this->json('POST', '/api/register', $data, [
             "Accept" => "application/json",
             "Content-Type" => "application/json"
-        ])
-            ->assertStatus(422)
+        ]);
+
+        $this->customLog->info("register", ["response" => $response]);
+
+        $response->assertStatus(422)
             ->assertJsonFragment([
                 "password" => [
                     'The password field confirmation does not match.'
@@ -130,11 +142,14 @@ class AuthenticationTest extends TestCase
             "password_confirmation" => "tester123"
         ];
 
-        $this->json('POST', '/api/register', $data, [
+        $response = $this->json('POST', '/api/register', $data, [
             "Accept" => "application/json",
             "Content-Type" => "application/json"
-        ])
-            ->assertStatus(422)
+        ]);
+
+        $this->customLog->info("register", ["response" => $response]);
+
+        $response->assertStatus(422)
             ->assertJsonStructure([
                 "errors" => [
                     "email"
@@ -157,6 +172,8 @@ class AuthenticationTest extends TestCase
             "Content-Type" => "application/json"
         ]);
 
+        $this->customLog->info("login", ["response" => $response]);
+
         $response->assertStatus(200)
             ->assertJsonStructure([
                 "message",
@@ -170,7 +187,7 @@ class AuthenticationTest extends TestCase
     public function test_it_should_reject_if_login_request_is_invalid()
     {
 
-        $request = $this->json('POST', '/api/login', [
+        $response = $this->json('POST', '/api/login', [
             "email" => "",
             "password" => "",
         ], [
@@ -178,7 +195,9 @@ class AuthenticationTest extends TestCase
             "Content-Type" => "application/json"
         ]);
 
-        $request->assertStatus(422)
+        $this->customLog->info("login", ["response" => $response]);
+
+        $response->assertStatus(422)
             ->assertJsonStructure([
                 "errors"
             ]);
@@ -191,7 +210,7 @@ class AuthenticationTest extends TestCase
             "password" => Hash::make('password')
         ]);
 
-        $request = $this->json('POST', '/api/login', [
+        $response = $this->json('POST', '/api/login', [
             "email" => $user->email,
             "password" => "123123123",
         ], [
@@ -199,7 +218,9 @@ class AuthenticationTest extends TestCase
             "Content-Type" => "application/json"
         ]);
 
-        $request->assertStatus(401)
+        $this->customLog->info("login", ["response" => $response]);
+
+        $response->assertStatus(401)
             ->assertJsonFragment([
                 "message" => "Invalid credentials"
             ]);
@@ -219,13 +240,15 @@ class AuthenticationTest extends TestCase
             "Content-Type" => "application/json"
         ]);
 
-        $request = $this->json('DELETE', '/api/logout', [], [
+        $response = $this->json('DELETE', '/api/logout', [], [
             "Accept" => "application/json",
             "Content-Type" => "application/json",
             "Authorization" => "Bearer " . $login_data->original["data"]["token"]
         ]);
 
-        $request->assertStatus(200)
+        $this->customLog->info("logout", ["response" => $response]);
+
+        $response->assertStatus(200)
             ->assertJsonFragment([
                 "message" => "Logged Out"
             ]);
@@ -233,13 +256,15 @@ class AuthenticationTest extends TestCase
 
     public function test_it_should_reject_if_not_authorized()
     {
-        $request = $this->json('DELETE', '/api/logout', [], [
+        $response = $this->json('DELETE', '/api/logout', [], [
             "Accept" => "application/json",
             "Content-Type" => "application/json",
             "Authorization" => ""
         ]);
 
-        $request->assertStatus(401)
+        $this->customLog->info("logout", ["response" => $response]);
+
+        $response->assertStatus(401)
             ->assertJsonFragment([
                 "message" => "Unauthenticated."
             ]);
