@@ -204,4 +204,44 @@ class AuthenticationTest extends TestCase
                 "message" => "Invalid credentials"
             ]);
     }
+
+    public function test_it_should_can_logout()
+    {
+        $user = User::factory()->create([
+            "password" => Hash::make('password')
+        ]);
+
+        $login_data = $this->json('POST', '/api/login', [
+            "email" => $user->email,
+            "password" => "password"
+        ], [
+            "Accept" => "application/json",
+            "Content-Type" => "application/json"
+        ]);
+
+        $request = $this->json('DELETE', '/api/logout', [], [
+            "Accept" => "application/json",
+            "Content-Type" => "application/json",
+            "Authorization" => "Bearer " . $login_data->original["data"]["token"]
+        ]);
+
+        $request->assertStatus(200)
+            ->assertJsonFragment([
+                "message" => "Logged Out"
+            ]);
+    }
+
+    public function test_it_should_reject_if_not_authorized()
+    {
+        $request = $this->json('DELETE', '/api/logout', [], [
+            "Accept" => "application/json",
+            "Content-Type" => "application/json",
+            "Authorization" => ""
+        ]);
+
+        $request->assertStatus(401)
+            ->assertJsonFragment([
+                "message" => "Unauthenticated."
+            ]);
+    }
 }
