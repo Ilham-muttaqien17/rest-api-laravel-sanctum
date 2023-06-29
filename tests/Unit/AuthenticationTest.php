@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Log;
 
@@ -138,6 +139,69 @@ class AuthenticationTest extends TestCase
                 "errors" => [
                     "email"
                 ]
+            ]);
+    }
+
+
+    public function test_it_should_can_login()
+    {
+        $user = User::factory()->create([
+            "password" => Hash::make('password')
+        ]);
+
+        $response = $this->json('POST', '/api/login', [
+            "email" => $user->email,
+            "password" => "password"
+        ], [
+            "Accept" => "application/json",
+            "Content-Type" => "application/json"
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                "message",
+                "data" => [
+                    "user",
+                    "token"
+                ]
+            ]);
+    }
+
+    public function test_it_should_reject_if_login_request_is_invalid()
+    {
+
+        $request = $this->json('POST', '/api/login', [
+            "email" => "",
+            "password" => "",
+        ], [
+            "Accept" => "application/json",
+            "Content-Type" => "application/json"
+        ]);
+
+        $request->assertStatus(422)
+            ->assertJsonStructure([
+                "errors"
+            ]);
+    }
+
+    public function test_it_should_reject_if_credentials_is_invalid()
+    {
+
+        $user = User::factory()->create([
+            "password" => Hash::make('password')
+        ]);
+
+        $request = $this->json('POST', '/api/login', [
+            "email" => $user->email,
+            "password" => "123123123",
+        ], [
+            "Accept" => "application/json",
+            "Content-Type" => "application/json"
+        ]);
+
+        $request->assertStatus(401)
+            ->assertJsonFragment([
+                "message" => "Invalid credentials"
             ]);
     }
 }
