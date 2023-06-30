@@ -6,13 +6,10 @@ use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use App\Traits\HttpResponses;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-
     use HttpResponses;
 
     public function register(StoreUserRequest $request)
@@ -22,14 +19,14 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password)
+            'password' => bcrypt($request->password),
         ]);
 
-        $token = $user->createToken('API Token of ' . $user->name)->plainTextToken;
+        $token = $user->createToken('API Token of '.$user->name)->plainTextToken;
 
         $data = [
             'user' => $user,
-            'token' => $token
+            'token' => $token,
         ];
 
         return $this->success($data, 'Registration Successfully', 201);
@@ -41,15 +38,15 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return $this->failed('Invalid credentials', 401);
         }
 
-        $token = $user->createToken('API Token of ' . $user->name)->plainTextToken;
+        $token = $user->createToken('API Token of '.$user->name)->plainTextToken;
 
         $data = [
             'user' => $user,
-            'token' => $token
+            'token' => $token,
         ];
 
         return $this->success($data, 'Login Successfully', 200);
@@ -58,6 +55,7 @@ class AuthController extends Controller
     public function logout()
     {
         auth()->user()->currentAccessToken()->delete();
+
         return $this->success(null, 'Logged Out', 200);
     }
 }

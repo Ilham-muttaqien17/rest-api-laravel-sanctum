@@ -14,102 +14,102 @@ class StoreProductTest extends TestCase
     public function test_it_should_can_store_new_product(): void
     {
         $user = User::factory()->create([
-            "password" => Hash::make('password')
+            'password' => Hash::make('password'),
         ]);
 
         $login_data = $this->json('POST', '/api/login', [
-            "email" => $user->email,
-            "password" => "password"
+            'email' => $user->email,
+            'password' => 'password',
         ], [
-            "Accept" => "application/json",
-            "Content-Type" => "application/json"
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
         ]);
 
         $data = [
-            "name" => "Product Test",
-            "slug" => "product-test",
-            "description" => "Description of product test",
-            "price" => "12"
+            'name' => 'Product Test',
+            'slug' => 'product-test',
+            'description' => 'Description of product test',
+            'price' => '12',
         ];
 
         $response = $this->json('POST', '/api/v1/products', $data, [
-            "Accept" => "application/json",
-            "Content-Type" => "application/json",
-            "Authorization" => "Bearer " . $login_data->original["data"]["token"]
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer '.$login_data->original['data']['token'],
         ]);
 
-        $this->customLog->info("create product", ["response" => $response]);
+        $this->customLog->info('create product', ['response' => $response]);
 
         $response->assertStatus(201)
             ->assertJsonStructure([
-                "message",
-                "data"
+                'message',
+                'data',
             ])
             ->assertJson([
-                "data" => [
-                    "name" => $data["name"],
-                    "slug" => $data["slug"],
-                    "description" => $data["description"],
-                    "price" => $data["price"],
-                ]
+                'data' => [
+                    'name' => $data['name'],
+                    'slug' => $data['slug'],
+                    'description' => $data['description'],
+                    'price' => $data['price'],
+                ],
             ]);
     }
 
     public function test_it_should_reject_if_request_is_not_valid(): void
     {
         $user = User::factory()->create([
-            "password" => Hash::make('password')
+            'password' => Hash::make('password'),
         ]);
 
         $login_data = $this->json('POST', '/api/login', [
-            "email" => $user->email,
-            "password" => "password"
+            'email' => $user->email,
+            'password' => 'password',
         ], [
-            "Accept" => "application/json",
-            "Content-Type" => "application/json"
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
         ]);
 
         $data = [
-            "name" => "",
-            "slug" => "",
-            "description" => "",
-            "price" => ""
+            'name' => '',
+            'slug' => '',
+            'description' => '',
+            'price' => '',
         ];
 
         $response = $this->json('POST', '/api/v1/products', $data, [
-            "Accept" => "application/json",
-            "Content-Type" => "application/json",
-            "Authorization" => "Bearer " . $login_data->original["data"]["token"]
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer '.$login_data->original['data']['token'],
         ]);
 
-        $this->customLog->info("create product", ["response" => $response]);
+        $this->customLog->info('create product', ['response' => $response]);
 
         $response->assertStatus(422)
             ->assertJsonStructure([
-                "errors"
+                'errors',
             ]);
     }
 
     public function test_it_should_reject_if_user_is_not_authenticated(): void
     {
         $data = [
-            "name" => "Product Test",
-            "slug" => "product-test",
-            "description" => "Description of product test",
-            "price" => "12"
+            'name' => 'Product Test',
+            'slug' => 'product-test',
+            'description' => 'Description of product test',
+            'price' => '12',
         ];
 
         $response = $this->json('POST', '/api/v1/products', $data, [
-            "Accept" => "application/json",
-            "Content-Type" => "application/json",
-            "Authorization" => ""
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'Authorization' => '',
         ]);
 
-        $this->customLog->info("create product", ["response" => $response]);
+        $this->customLog->info('create product', ['response' => $response]);
 
         $response->assertStatus(401)
             ->assertJson([
-                "message" => "Unauthenticated."
+                'message' => 'Unauthenticated.',
             ]);
     }
 }

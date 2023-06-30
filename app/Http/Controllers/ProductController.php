@@ -7,20 +7,18 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
-
     use HttpResponses;
 
     public function index(Request $request)
     {
-        $products =  Product::all();
+        $products = Product::all();
 
         if ($request->query('keyword')) {
             $keyword = $request->query('keyword');
-            $products = Product::where("name", 'like', '%' . $keyword . '%')->get();
+            $products = Product::where('name', 'like', '%'.$keyword.'%')->get();
         }
 
         return $this->success($products, 'Get products successfully');
@@ -39,7 +37,7 @@ class ProductController extends Controller
             'name' => $request->name,
             'slug' => $request->slug,
             'description' => $request->description,
-            'price' => $request->price
+            'price' => $request->price,
         ]);
 
         return $this->success($product, 'Product created successfully', 201);

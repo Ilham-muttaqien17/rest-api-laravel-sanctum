@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Product;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Tests\TestCase;
 
 class DeleteProductTest extends TestCase
 {
@@ -17,29 +17,29 @@ class DeleteProductTest extends TestCase
         $product = Product::factory()->create();
 
         $user = User::factory()->create([
-            "password" => Hash::make('password')
+            'password' => Hash::make('password'),
         ]);
 
         $login_data = $this->json('POST', '/api/login', [
-            "email" => $user->email,
-            "password" => "password"
+            'email' => $user->email,
+            'password' => 'password',
         ], [
-            "Accept" => "application/json",
-            "Content-Type" => "application/json"
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
         ]);
 
-        $response = $this->json('DELETE', '/api/v1/products/' . $product->id, [], [
-            "Accept" => "application/json",
-            "Content-Type" => "application/json",
-            "Authorization" => "Bearer " . $login_data->original["data"]["token"]
+        $response = $this->json('DELETE', '/api/v1/products/'.$product->id, [], [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer '.$login_data->original['data']['token'],
         ]);
 
-        $this->customLog->info("delete product", ["response" => $response]);
+        $this->customLog->info('delete product', ['response' => $response]);
 
         $response->assertStatus(200)
             ->assertJson([
-                "message" => "Product deleted successfully",
-                "data" => null
+                'message' => 'Product deleted successfully',
+                'data' => null,
             ]);
     }
 
@@ -48,28 +48,28 @@ class DeleteProductTest extends TestCase
         $product = Product::factory()->create();
 
         $user = User::factory()->create([
-            "password" => Hash::make('password')
+            'password' => Hash::make('password'),
         ]);
 
         $login_data = $this->json('POST', '/api/login', [
-            "email" => $user->email,
-            "password" => "password"
+            'email' => $user->email,
+            'password' => 'password',
         ], [
-            "Accept" => "application/json",
-            "Content-Type" => "application/json"
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
         ]);
 
-        $response = $this->json('DELETE', '/api/v1/products/' . ($product->id + 1), [], [
-            "Accept" => "application/json",
-            "Content-Type" => "application/json",
-            "Authorization" => "Bearer " . $login_data->original["data"]["token"]
+        $response = $this->json('DELETE', '/api/v1/products/'.($product->id + 1), [], [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer '.$login_data->original['data']['token'],
         ]);
 
-        $this->customLog->info("delete product", ["response" => $response]);
+        $this->customLog->info('delete product', ['response' => $response]);
 
         $response->assertStatus(404)
             ->assertJson([
-                "message" => "Product is not found",
+                'message' => 'Product is not found',
             ]);
     }
 
@@ -77,17 +77,17 @@ class DeleteProductTest extends TestCase
     {
         $product = Product::factory()->create();
 
-        $response = $this->json('DELETE', '/api/v1/products/' . $product->id, [], [
-            "Accept" => "application/json",
-            "Content-Type" => "application/json",
-            "Authorization" => ""
+        $response = $this->json('DELETE', '/api/v1/products/'.$product->id, [], [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'Authorization' => '',
         ]);
 
-        $this->customLog->info("delete product", ["response" => $response]);
+        $this->customLog->info('delete product', ['response' => $response]);
 
         $response->assertStatus(401)
             ->assertJson([
-                "message" => "Unauthenticated.",
+                'message' => 'Unauthenticated.',
             ]);
     }
 }

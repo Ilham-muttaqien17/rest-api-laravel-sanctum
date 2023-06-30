@@ -10,8 +10,8 @@ use Throwable;
 
 class Handler extends ExceptionHandler
 {
-
     use HttpResponses;
+
     /**
      * The list of the inputs that are never flashed to the session on validation exceptions.
      *
@@ -36,7 +36,8 @@ class Handler extends ExceptionHandler
             if ($request->is('api/*')) {
                 $parameterNames = $request->route()->parameterNames();
                 $modelName = ucfirst(end($parameterNames));
-                return $this->failed($modelName . " is not found", 404);
+
+                return $this->failed($modelName.' is not found', 404);
             }
         });
     }

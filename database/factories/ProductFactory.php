@@ -19,11 +19,12 @@ class ProductFactory extends Factory
     {
         $name = fake()->unique()->sentence(3);
         $slug = Str::slug($name);
+
         return [
-            "name" => $name,
-            "slug" => $slug,
-            "description" => fake()->sentence(),
-            "price" => fake()->numberBetween(1, 100)
+            'name' => $name,
+            'slug' => $slug,
+            'description' => fake()->sentence(),
+            'price' => fake()->numberBetween(1, 100),
         ];
     }
 }

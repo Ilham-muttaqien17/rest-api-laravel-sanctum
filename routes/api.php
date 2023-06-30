@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
-use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,7 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Route::get('/products', [ProductController::class, 'index']);
 
 Route::group([
-    'prefix' => 'v1/products'
+    'prefix' => 'v1/products',
 ], function () {
     Route::group([
         'middleware' => 'auth:sanctum',
@@ -38,7 +37,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => 'auth:sanctum'
+    'middleware' => 'auth:sanctum',
 ], function () {
     Route::delete('/logout', [AuthController::class, 'logout']);
 });

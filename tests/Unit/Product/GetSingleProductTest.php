@@ -14,17 +14,17 @@ class GetSingleProductTest extends TestCase
     {
         $product = Product::factory()->create();
 
-        $response = $this->json('GET', '/api/v1/products/' . $product->id, [], [
-            "Accept" => "application/json",
-            "Content-Type" => "application/json"
+        $response = $this->json('GET', '/api/v1/products/'.$product->id, [], [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
         ]);
 
-        $this->customLog->info('get single product', ["response" => $response]);
+        $this->customLog->info('get single product', ['response' => $response]);
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                "message",
-                "data"
+                'message',
+                'data',
             ]);
     }
 
@@ -32,16 +32,16 @@ class GetSingleProductTest extends TestCase
     {
         $product = Product::factory()->create();
 
-        $response = $this->json('GET', '/api/v1/products/' . ($product->id + 1), [], [
-            "Accept" => "application/json",
-            "Content-Type" => "application/json"
+        $response = $this->json('GET', '/api/v1/products/'.($product->id + 1), [], [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
         ]);
 
-        $this->customLog->info('get single product', ["response" => $response]);
+        $this->customLog->info('get single product', ['response' => $response]);
 
         $response->assertStatus(404)
             ->assertJson([
-                "message" => "Product is not found"
+                'message' => 'Product is not found',
             ]);
     }
 }

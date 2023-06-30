@@ -25,7 +25,7 @@ class UpdateProductRequest extends FormRequest
             'name' => ['string', 'max:255'],
             'slug' => ['string', 'unique:products', 'max:255'],
             'description' => ['string', 'max:255'],
-            'price' => ['numeric']
+            'price' => ['numeric'],
         ];
     }
 }
