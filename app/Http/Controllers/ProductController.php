@@ -26,12 +26,8 @@ class ProductController extends Controller
         return $this->success($products, 'Get products successfully');
     }
 
-    public function show($id)
+    public function show(Product $product)
     {
-        $product = Product::find($id);
-
-        if (!$product) return $this->failed('Product not found!', 404);
-
         return $this->success($product, 'Get product successfully');
     }
 
@@ -49,25 +45,17 @@ class ProductController extends Controller
         return $this->success($product, 'Product created successfully', 201);
     }
 
-    public function update(UpdateProductRequest $request, $id)
+    public function update(UpdateProductRequest $request, Product $product)
     {
         $request->validated($request->all());
-
-        $product = Product::find($id);
-
-        if (!$product) return $this->failed('Product not found!', 404);
 
         $product->update($request->all());
 
         return $this->success($product, 'Product updated successfully');
     }
 
-    public function delete($id)
+    public function delete(Product $product)
     {
-        $product = Product::find($id);
-
-        if (!$product) return $this->failed('Product not found!', 404);
-
         $product->delete();
 
         return $this->success(null, 'Product deleted successfully');
