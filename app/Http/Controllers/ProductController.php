@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProductController extends Controller
 {
@@ -14,11 +15,16 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $products = Product::all();
+        $products = Cache::remember('products_list', 60, function () {
+            return Product::all();
+        });
 
         if ($request->query('keyword')) {
-            $keyword = $request->query('keyword');
-            $products = Product::where('name', 'like', '%'.$keyword.'%')->get();
+            $products = Cache::remember('products_list', 60, function () use ($request) {
+                $keyword = $request->query('keyword');
+
+                return Product::where('name', 'like', '%' . $keyword . '%')->get();
+            });
         }
 
         return $this->success($products, 'Get products successfully');
