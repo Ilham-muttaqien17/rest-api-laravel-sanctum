@@ -15,19 +15,24 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $products = Cache::remember('products_list', 60, function () {
-            return Product::all();
+
+        $currentPage = $request->query('page', 1);
+        $products = Cache::remember('product_list:' . $currentPage, env('CACHE_EXPIRATION', 60), function () {
+            return Product::paginate(env('PAGINATION_PER_PAGE', 10));
         });
 
         if ($request->query('keyword')) {
-            $products = Cache::remember('products_list', 60, function () use ($request) {
-                $keyword = $request->query('keyword');
+            // $products = Cache::remember('products_search_result:' . $currentPage, env('CACHE_EXPIRATION', 60), function () use ($request) {
+            //     $keyword = $request->query('keyword');
 
-                return Product::where('name', 'like', '%' . $keyword . '%')->get();
-            });
+            //     return Product::where('name', 'like', '%' . $keyword . '%')->paginate(env('PAGINATION_PER_PAGE', 10));
+            // });
+            $keyword = $request->query('keyword');
+
+            $products = Product::where('name', 'like', '%' . $keyword . '%')->paginate(env('PAGINATION_PER_PAGE', 10));
         }
 
-        return $this->success($products, 'Get products successfully');
+        return $this->success($products, 'Get products successfully', 200, true);
     }
 
     public function show(Product $product)
