@@ -4,13 +4,30 @@ namespace App\Traits;
 
 trait HttpResponses
 {
-    protected function success($data, $message = null, $code = 200)
+    protected function success($data, $message = null, $code = 200, $paginate = false)
     {
-        return response()->json([
-            'status' => true,
-            'message' => $message,
-            'data' => $data,
-        ], $code);
+
+        $response['status'] = true;
+        $response['message'] = $message;
+        $response['data'] = $data;
+        if ($paginate) {
+            $response['data'] = $data->items();
+            $response['meta'] = [
+                'current_page' => $data->currentPage(),
+                'current_item' => $data->count(),
+                'last_page' => $data->lastPage(),
+                'next_page_url' => $data->nextPageUrl(),
+                'path' => $data->path(),
+                'per_page' => $data->perPage(),
+                'prev_page_url' => $data->previousPageUrl(),
+                'total_item' => $data->total(),
+            ];
+        }
+
+        return response()->json(
+            $response,
+            $code
+        );
     }
 
     protected function failed($message, $code)
