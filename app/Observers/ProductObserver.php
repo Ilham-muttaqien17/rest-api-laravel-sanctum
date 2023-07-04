@@ -3,6 +3,8 @@
 namespace App\Observers;
 
 use App\Models\Product;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 
@@ -13,19 +15,11 @@ class ProductObserver
      */
     public function created(Product $product): void
     {
-        // Cache::forget('products_list');
-        $cachePath = storage_path('framework/cache/data');
-        $cacheFiles = File::files($cachePath);
-        $cacheKeys = [];
+        $paginator = Product::paginate(env('PAGINATION_PER_PAGE', 5));
+        $lastPage = $paginator->lastPage();
 
-        foreach ($cacheFiles as $file) {
-            $cacheKeys[] = pathinfo($file->getFilename(), PATHINFO_FILENAME);
-        }
-
-        foreach ($cacheKeys as $key) {
-            if (preg_match('/product_list:/i', $key)) {
-                Cache::forget($key);
-            }
+        for ($i = 1; $i <= $lastPage; $i++) {
+            Cache::forget('product_list:' . $i);
         }
     }
 
@@ -34,19 +28,11 @@ class ProductObserver
      */
     public function updated(Product $product): void
     {
-        // Cache::forget('products_list');
-        $cachePath = storage_path('framework/cache/data');
-        $cacheFiles = File::files($cachePath);
-        $cacheKeys = [];
+        $paginator = Product::paginate(env('PAGINATION_PER_PAGE', 5));
+        $lastPage = $paginator->lastPage();
 
-        foreach ($cacheFiles as $file) {
-            $cacheKeys[] = pathinfo($file->getFilename(), PATHINFO_FILENAME);
-        }
-
-        foreach ($cacheKeys as $key) {
-            if (preg_match('/product_list:/i', $key)) {
-                Cache::forget($key);
-            }
+        for ($i = 1; $i <= $lastPage; $i++) {
+            Cache::forget('product_list:' . $i);
         }
     }
 }
